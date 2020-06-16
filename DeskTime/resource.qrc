@@ -1,2 +1,15 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/">
+        <file>img/钉子_fixed_hover.png</file>
+        <file>img/钉子_fixed.png</file>
+        <file>img/钉子_nofixed_hover.png</file>
+        <file>img/钉子_nofixed.png</file>
+        <file>img/关闭 (1).png</file>
+        <file>img/置顶 (1).png</file>
+        <file>img/置顶.png</file>
+        <file>img/设置.png</file>
+        <file>img/关  闭_pressed.png</file>
+        <file>img/关  闭.png</file>
+        <file>img/关  闭_hover.png</file>
+    </qresource>
+</RCC>
