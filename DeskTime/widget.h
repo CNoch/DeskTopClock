@@ -5,10 +5,14 @@
 #include <QTimer>
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QMenu>
+#include <SetDlg.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
+
+class Xml_Helper;
 
 class Widget : public QWidget
 {
@@ -25,9 +29,16 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 private slots:
     void on_timeout();
-    void on_pushButton_2_clicked();
+    void on_action_fixed_clicked();
 
-    void on_pushButton_clicked();
+    void on_action_top_clicked();
+
+    void on_action_set_clicked();
+
+    void on_label_customContextMenuRequested(const QPoint &pos);
+
+private:
+    void InitMenu();
 
 private:
     Ui::Widget *ui;
@@ -37,5 +48,11 @@ private:
     QPoint  m_InitialPoint;                 //鼠标点击初始点（用于进行窗口移动）
 
     bool m_Top_flag = false;                 //窗口置顶
+
+    QMenu *m_Menu;                          //
+
+    SetDlg *m_SetDlg = nullptr;
+
+    Xml_Helper *m_Xml_Helper;
 };
 #endif // WIDGET_H
