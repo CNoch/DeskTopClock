@@ -55,7 +55,21 @@ public:
 
     void read(xml_strcut *xml)
     {
+        QFile file(m_Filepath);
+        if (file.open(QIODevice::ReadOnly|QIODevice::Text))
+        {
+            QXmlStreamReader reader(&file);
+            while(!reader.atEnd())
+            {
+                QXmlStreamReader::TokenType token = reader.readNext();
+                switch (token) {
+                case QXmlStreamReader::StartElement:
+                {
 
+                }
+                }
+            }
+        }
     }
     void write(const xml_strcut &xml)
     {
@@ -69,25 +83,30 @@ public:
 
             writer.writeStartElement("AppInfo");
 
+
             writer.writeTextElement("x",QString("%1").arg(xml.x));
             writer.writeTextElement("y",QString("%1").arg(xml.y));
             writer.writeTextElement("width",QString("%1").arg(xml.width));
             writer.writeTextElement("height",QString("%1").arg(xml.height));
 
             writer.writeStartElement("Font");
-            writer.writeTextElement("font",xml.font.font);
-            writer.writeTextElement("red",QString("%1").arg(xml.font.red));
-            writer.writeTextElement("green",QString("%1").arg(xml.font.green));
-            writer.writeTextElement("blue",QString("%1").arg(xml.font.blue));
+            QXmlStreamAttributes butes;
+            butes.append("family",xml.font.font);
+            butes.append("red",QString("%1").arg(xml.font.red));
+            butes.append("green",QString("%1").arg(xml.font.green));
+            butes.append("blue",QString("%1").arg(xml.font.blue));
+            writer.writeAttributes(butes);
             writer.writeEndElement();
 
             writer.writeTextElement("timetype",xml.TimeType);
 
             writer.writeStartElement("Background");
-            writer.writeTextElement("red",QString("%1").arg(xml.background.red));
-            writer.writeTextElement("green",QString("%1").arg(xml.background.green));
-            writer.writeTextElement("blue",QString("%1").arg(xml.background.blue));
-            writer.writeTextElement("alpha",QString("%1").arg(xml.background.alpha));
+            butes.clear();
+            butes.append("red",QString("%1").arg(xml.background.red));
+            butes.append("green",QString("%1").arg(xml.background.green));
+            butes.append("blue",QString("%1").arg(xml.background.blue));
+            butes.append("alpha",QString("%1").arg(xml.background.alpha));
+            writer.writeAttributes(butes);
             writer.writeEndElement();
 
             writer.writeEndElement();
