@@ -1,7 +1,2 @@
-<RCC>
-    <qresource prefix="/">
-        <file>img/钉子 (1).png</file>
-        <file>img/钉子 (2).png</file>
-        <file>img/钉子.png</file>
-    </qresource>
-</RCC>
+<!DOCTYPE RCC>
+<RCC version="1.0"/>
