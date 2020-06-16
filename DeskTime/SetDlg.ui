@@ -19,9 +19,6 @@
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="topMargin">
-    <number>9</number>
-   </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
@@ -74,34 +71,6 @@
        </property>
       </spacer>
      </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_close">
-       <property name="maximumSize">
-        <size>
-         <width>16</width>
-         <height>16</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton{
-	max-width:16;
-	max-height:16;
-	border-image: url(:/img/关  闭.png);
-}
-
-QPushButton:hover{
-	border-image: url(:/img/关  闭_hover.png);
-}
-
-QPushButton:pressed{
-	border-image: url(:/img/关  闭_pressed.png);
-}</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>
@@ -112,6 +81,9 @@ QPushButton:pressed{
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="3">
        <widget class="QPushButton" name="pushButton_font">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
         <property name="text">
          <string>字体</string>
         </property>
@@ -272,8 +244,8 @@ QPushButton:pressed{
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>287</width>
-         <height>20</height>
+         <width>58</width>
+         <height>44</height>
         </size>
        </property>
       </spacer>
@@ -285,10 +257,67 @@ QPushButton:pressed{
        </property>
       </widget>
      </item>
+     <item>
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_close">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>取消</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
     </layout>
    </item>
   </layout>
  </widget>
- <resources/>
+ <tabstops>
+  <tabstop>pushButton_save</tabstop>
+  <tabstop>pushButton_close</tabstop>
+  <tabstop>pushButton_font</tabstop>
+  <tabstop>pushButton_font_color</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>pushButton_background_color</tabstop>
+  <tabstop>horizontalSlider_background_alpha</tabstop>
+  <tabstop>lineEdit_background_alpha</tabstop>
+  <tabstop>lineEdit_background_color</tabstop>
+  <tabstop>lineEdit_font_color</tabstop>
+  <tabstop>lineEdit_font</tabstop>
+ </tabstops>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
