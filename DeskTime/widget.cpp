@@ -7,7 +7,7 @@
 
 #ifdef Q_OS_WIN
 #include <windows.h>
-#eles
+#else
 #endif
 
 #include <QObject>
@@ -15,30 +15,7 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
-struct xml_strcut
-{
-    int x;
-    int y;
-    int width;
-    int height;
-    struct xml_font
-    {
-        QString font;
-        int red;
-        int green;
-        int blue;
-    };
-    xml_font font;
-    QString TimeType;
-    struct xml_background
-    {
-        int red;
-        int green;
-        int blue;
-        int alpha;
-    };
-    xml_background background;
-};
+
 
 class Xml_Helper
 {
@@ -65,12 +42,45 @@ public:
                 switch (token) {
                 case QXmlStreamReader::StartElement:
                 {
-
+                    QString name = reader.name().toString();
+                    if ("x" == name)
+                    {
+                        xml->x = reader.readElementText().toInt();
+                    }
+                    else if ("y" == name)
+                    {
+                        xml->y = reader.readElementText().toInt();
+                    }
+                    else if ("width" == name)
+                    {
+                        xml->width = reader.readElementText().toInt();
+                    }
+                    else if ("height" == name)
+                    {
+                        xml->height = reader.readElementText().toInt();
+                    }
+                    else if ("font" == name)
+                    {
+                        xml->font.font = reader.attributes().value("family").toString();
+                        xml->font.red = reader.attributes().value("red").toInt();
+                        xml->font.green = reader.attributes().value("green").toInt();
+                        xml->font.blue = reader.attributes().value("blue").toInt();
+                    }
+                    else if ("background" == name)
+                    {
+                        xml->background.red = reader.attributes().value("red").toInt();
+                        xml->background.green = reader.attributes().value("green").toInt();
+                        xml->background.blue = reader.attributes().value("blue").toInt();
+                        xml->background.alpha = reader.attributes().value("alpha").toInt();
+                    }
+                    break;
                 }
                 }
             }
+            file.close();
         }
     }
+
     void write(const xml_strcut &xml)
     {
         QFile file(m_Filepath);
@@ -83,13 +93,12 @@ public:
 
             writer.writeStartElement("AppInfo");
 
-
             writer.writeTextElement("x",QString("%1").arg(xml.x));
             writer.writeTextElement("y",QString("%1").arg(xml.y));
             writer.writeTextElement("width",QString("%1").arg(xml.width));
             writer.writeTextElement("height",QString("%1").arg(xml.height));
 
-            writer.writeStartElement("Font");
+            writer.writeStartElement("font");
             QXmlStreamAttributes butes;
             butes.append("family",xml.font.font);
             butes.append("red",QString("%1").arg(xml.font.red));
@@ -100,7 +109,7 @@ public:
 
             writer.writeTextElement("timetype",xml.TimeType);
 
-            writer.writeStartElement("Background");
+            writer.writeStartElement("background");
             butes.clear();
             butes.append("red",QString("%1").arg(xml.background.red));
             butes.append("green",QString("%1").arg(xml.background.green));
@@ -128,7 +137,12 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
     this->setWindowFlag(Qt::FramelessWindowHint);
+
+#ifdef Q_OS_LINUX
     this->setWindowFlag(Qt::WindowStaysOnTopHint);
+#endif // Q_OS_LINUX
+
+    
     this->setAttribute(Qt::WA_TranslucentBackground);
     //m_TitleMoveWidget = new TitleMoveWidget();
     InitMenu();
@@ -136,9 +150,8 @@ Widget::Widget(QWidget *parent)
     connect(m_Timer,&QTimer::timeout,this,&Widget::on_timeout);
     m_Timer->start(1000);
 
-    m_Xml_Helper = new Xml_Helper("test.xml",this);
-    xml_strcut xml;
-    m_Xml_Helper->write(xml);
+    m_Xml_Helper = new Xml_Helper("test11111.xml",this);
+    m_Xml_Helper->read(&m_xml);
 }
 
 Widget::~Widget()
@@ -149,7 +162,7 @@ Widget::~Widget()
 void Widget::paintEvent(QPaintEvent *event)
 {
     QPainter p(this);
-    p.fillRect(this->rect(),QColor(0,0,0,50));
+    p.fillRect(this->rect(), QColor(m_xml.background.red, m_xml.background.green, m_xml.background.blue, m_xml.background.alpha));
 }
 
 void Widget::mouseMoveEvent(QMouseEvent *event)
@@ -186,11 +199,11 @@ void Widget::on_action_fixed_clicked()
     QAction *action_fixed = m_Menu->actions().at(0);
     if (m_Move_flag)
     {
-        action_fixed->setIcon(QIcon(QStringLiteral(":/img/é’‰å­_fixed_hover.png")));
+        action_fixed->setIcon(QIcon(QStringLiteral(":/img/¶¤×Ó_fixed_hover.png")));
     }
     else
     {
-        action_fixed->setIcon(QIcon(QStringLiteral(":/img/é’‰å­_fixed.png")));
+        action_fixed->setIcon(QIcon(QStringLiteral(":/img/¶¤×Ó_fixed.png")));
     }
 }
 #ifdef Q_OS_WIN
@@ -200,11 +213,11 @@ void Widget::on_action_top_clicked()
     QAction *action_top = m_Menu->actions().at(1);
     if (m_Top_flag)
     {
-        action_top->setIcon(QIcon(QStringLiteral(":/img/ç½®é¡¶.png")));
+        action_top->setIcon(QIcon(QStringLiteral(":/img/ÖÃ¶¥ (1).png")));
         ::SetWindowPos(HWND(this->winId()),HWND_TOPMOST,0,0,0,0,SWP_NOMOVE| SWP_NOSIZE | SWP_SHOWWINDOW);
     }
     else {
-        action_top->setIcon(QIcon(QStringLiteral(":/img/ç½®é¡¶ (1).png")));
+        action_top->setIcon(QIcon(QStringLiteral(":/img/ÖÃ¶¥.png")));
         ::SetWindowPos(HWND(this->winId()), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
     }
 }
@@ -213,14 +226,14 @@ void Widget::on_action_top_clicked()
 {
     m_Top_flag = !m_Top_flag;
 }
-
+#endif
 void Widget::on_action_set_clicked()
 {
     if (m_SetDlg == nullptr)
-        m_SetDlg = new SetDlg(this);
+        m_SetDlg = new SetDlg(&m_xml,this);
     m_SetDlg->exec();
 }
-#endif
+
 
 void Widget::on_label_customContextMenuRequested(const QPoint &pos)
 {
@@ -231,25 +244,25 @@ void Widget::InitMenu()
 {
     m_Menu = new QMenu(this);
     //
-    QAction *action_fixed = new QAction(QIcon(QStringLiteral(":/img/é’‰å­_fixed_hover.png")),QStringLiteral("å›ºå®š"),this);
+    QAction *action_fixed = new QAction(QIcon(QStringLiteral(":/img/¶¤×Ó_fixed_hover.png")),QStringLiteral("¹Ì¶¨"),this);
     connect(action_fixed,&QAction::triggered,this,&Widget::on_action_fixed_clicked);
     m_Menu->addAction(action_fixed);
 
-    //ç½®é¡¶
+    //ÖÃ¶¥
 #ifdef Q_OS_WIN
-    QAction *action_top = new QAction(QIcon(QStringLiteral(":/img/ç½®é¡¶ (1).png")),QStringLiteral("ç½®é¡¶"),this);
+    QAction *action_top = new QAction(QIcon(QStringLiteral(":/img/ÖÃ¶¥.png")),QStringLiteral("ÖÃ¶¥"),this);
     connect(action_top,&QAction::triggered,this,&Widget::on_action_top_clicked);
     m_Menu->addAction(action_top);
 #endif
 
-    //è®¾ç½®
-    QAction *action_set = new QAction(QIcon(QStringLiteral(":/img/è®¾ç½®.png")),QStringLiteral("è®¾ç½®"),this);
+    //ÉèÖÃ
+    QAction *action_set = new QAction(QIcon(QStringLiteral(":/img/ÉèÖÃ.png")),QStringLiteral("ÉèÖÃ"),this);
     connect(action_set,&QAction::triggered,this,&Widget::on_action_set_clicked);
     m_Menu->addAction(action_set);
 
     m_Menu->addSeparator();
     //close
-    QAction *action_close = new QAction(QIcon(QStringLiteral(":/img/å…³é—­ (1).png")),QStringLiteral("é€€å‡º"),this);
+    QAction* action_close = new QAction(QIcon(QStringLiteral(":/img/¹Ø±Õ (1).png")), QStringLiteral("ÍË³ö"), this);
     connect(action_close,&QAction::triggered,[this](){this->close();});
     m_Menu->addAction(action_close);
 }

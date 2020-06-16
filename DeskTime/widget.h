@@ -7,10 +7,13 @@
 #include <QMouseEvent>
 #include <QMenu>
 #include <SetDlg.h>
+#include "define.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
+
+
 
 class Xml_Helper;
 
@@ -53,6 +56,7 @@ private:
 
     SetDlg *m_SetDlg = nullptr;
 
+    xml_strcut m_xml;
     Xml_Helper *m_Xml_Helper;
 };
 #endif // WIDGET_H
