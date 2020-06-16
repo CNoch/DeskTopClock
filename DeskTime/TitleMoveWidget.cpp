@@ -16,7 +16,7 @@ void TitleMoveWidget::mouseMoveEvent(QMouseEvent *event)
         QWidget *parentWidget = this->parentWidget();
         QPoint point = parentWidget->pos();
         point.setX(point.x() + event->x() - m_PressPoint.x());
-        point.setY(point.x() + event->y() - m_PressPoint.y());
+        point.setY(point.y() + event->y() - m_PressPoint.y());
         parentWidget->move(point);
     }
 }
