@@ -26,6 +26,14 @@ private slots:
 
     void on_pushButton_font_color_clicked();
 
+    void on_pushButton_background_color_clicked();
+
+    void on_comboBox_timetype_currentIndexChanged(const QString &arg1);
+
+    void on_horizontalSlider_background_alpha_valueChanged(int value);
+
+private:
+    void InitWidget();
 private:
     Ui::SetDlg *ui;
     TitleMoveWidget *m_TitleMoveWidget;

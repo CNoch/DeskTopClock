@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>301</width>
-    <height>74</height>
+    <height>89</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QLabel" name="label">
      <property name="font">
@@ -26,7 +26,7 @@
       <enum>Qt::CustomContextMenu</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(255, 85, 127);</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>

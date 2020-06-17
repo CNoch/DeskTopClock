@@ -26,6 +26,7 @@ HEADERS += \
     SetDlg.h \
     TinyXML2/tinyxml2.h \
     TitleMoveWidget.h \
+    define.h \
     widget.h
 
 FORMS += \

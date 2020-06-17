@@ -4,9 +4,12 @@
 #include <QPainter>
 #include <QAction>
 #include <QIcon>
-
+#include <QApplication>
+#include <QSettings>
 #ifdef Q_OS_WIN
 #include <windows.h>
+#define Regedit_User "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+#define Regedit_Admin ""
 #else
 #endif
 
@@ -14,8 +17,6 @@
 #include <QFile>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
-
-
 
 class Xml_Helper
 {
@@ -59,12 +60,31 @@ public:
                     {
                         xml->height = reader.readElementText().toInt();
                     }
+                    else if ("boot" == name)
+                    {
+                        xml->boot = reader.readElementText().toInt();
+                    }
+                    else if ("top" == name)
+                    {
+                        xml->top = reader.readElementText().toInt();
+                    }
+                    else if ("fixed" == name)
+                    {
+                        xml->fixed = reader.readElementText().toInt();
+                    }
                     else if ("font" == name)
                     {
-                        xml->font.font = reader.attributes().value("family").toString();
+                        xml->font.family = reader.attributes().value("family").toString();
+                        xml->font.pointsize = reader.attributes().value("pointsize").toInt();
+                        xml->font.widght = reader.attributes().value("widght").toInt();
+                        xml->font.italic = reader.attributes().value("italic").toInt();
                         xml->font.red = reader.attributes().value("red").toInt();
                         xml->font.green = reader.attributes().value("green").toInt();
                         xml->font.blue = reader.attributes().value("blue").toInt();
+                    }
+                    else if ("timetype" == name)
+                    {
+                        xml->TimeType = reader.readElementText();
                     }
                     else if ("background" == name)
                     {
@@ -97,10 +117,16 @@ public:
             writer.writeTextElement("y",QString("%1").arg(xml.y));
             writer.writeTextElement("width",QString("%1").arg(xml.width));
             writer.writeTextElement("height",QString("%1").arg(xml.height));
+            writer.writeTextElement("boot",QString("%1").arg(xml.boot));
+            writer.writeTextElement("top",QString("%1").arg(xml.top));
+            writer.writeTextElement("fixed",QString("%1").arg(xml.fixed));
 
             writer.writeStartElement("font");
             QXmlStreamAttributes butes;
-            butes.append("family",xml.font.font);
+            butes.append("family",xml.font.family);
+            butes.append("pointsize",QString("%1").arg(xml.font.pointsize));
+            butes.append("wdight",QString("%1").arg(xml.font.widght));
+            butes.append("italic",QString("%1").arg(xml.font.italic));
             butes.append("red",QString("%1").arg(xml.font.red));
             butes.append("green",QString("%1").arg(xml.font.green));
             butes.append("blue",QString("%1").arg(xml.font.blue));
@@ -142,16 +168,20 @@ Widget::Widget(QWidget *parent)
     this->setWindowFlag(Qt::WindowStaysOnTopHint);
 #endif // Q_OS_LINUX
 
-    
+
     this->setAttribute(Qt::WA_TranslucentBackground);
     //m_TitleMoveWidget = new TitleMoveWidget();
-    InitMenu();
+
     m_Timer = new QTimer(this);
     connect(m_Timer,&QTimer::timeout,this,&Widget::on_timeout);
     m_Timer->start(1000);
 
-    m_Xml_Helper = new Xml_Helper("test11111.xml",this);
+    //xml_path
+    QString xml_path = QApplication::applicationDirPath() + "/AppInfo.xml";
+    m_Xml_Helper = new Xml_Helper(xml_path,this);
+
     m_Xml_Helper->read(&m_xml);
+    InitWidget();
 }
 
 Widget::~Widget()
@@ -163,11 +193,13 @@ void Widget::paintEvent(QPaintEvent *event)
 {
     QPainter p(this);
     p.fillRect(this->rect(), QColor(m_xml.background.red, m_xml.background.green, m_xml.background.blue, m_xml.background.alpha));
+    ui->label->setFont(QFont(m_xml.font.family,m_xml.font.pointsize,m_xml.font.widght,m_xml.font.italic));
+    ui->label->setStyleSheet(QString("color:rgb(%1,%2,%3)").arg(m_xml.font.red).arg(m_xml.font.green).arg(m_xml.font.blue));
 }
 
 void Widget::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::LeftButton && m_InitialPoint_bool && m_Move_flag)
+    if (event->buttons() & Qt::LeftButton && m_InitialPoint_bool && !m_Fixed_flag)
     {
         QPoint point = this->pos();
         point.setX(point.x() + event->x() - m_InitialPoint.x());
@@ -189,35 +221,35 @@ void Widget::mouseReleaseEvent(QMouseEvent *event)
 
 void Widget::on_timeout()
 {
-    ui->label->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    ui->label->setText(QDateTime::currentDateTime().toString(m_xml.TimeType));
 }
 
 
 void Widget::on_action_fixed_clicked()
 {
-    m_Move_flag = !m_Move_flag;
+    m_Fixed_flag = !m_Fixed_flag;
     QAction *action_fixed = m_Menu->actions().at(0);
-    if (m_Move_flag)
+    if (!m_Fixed_flag)
     {
-        action_fixed->setIcon(QIcon(QStringLiteral(":/img/¶¤×Ó_fixed_hover.png")));
+        action_fixed->setIcon(QIcon(QStringLiteral(":/img/nail.png")));
     }
     else
     {
-        action_fixed->setIcon(QIcon(QStringLiteral(":/img/¶¤×Ó_fixed.png")));
+        action_fixed->setIcon(QIcon(QStringLiteral(":/img/nail_fixed.png")));
     }
 }
 #ifdef Q_OS_WIN
 void Widget::on_action_top_clicked()
 {
     m_Top_flag = !m_Top_flag;
-    QAction *action_top = m_Menu->actions().at(1);
+    QAction *action_top = m_Menu->actions().at(m_Menu->actions().size() - 2);
     if (m_Top_flag)
     {
-        action_top->setIcon(QIcon(QStringLiteral(":/img/ÖÃ¶¥ (1).png")));
+        action_top->setIcon(QIcon(QStringLiteral(":/img/nail_fixed.png")));
         ::SetWindowPos(HWND(this->winId()),HWND_TOPMOST,0,0,0,0,SWP_NOMOVE| SWP_NOSIZE | SWP_SHOWWINDOW);
     }
     else {
-        action_top->setIcon(QIcon(QStringLiteral(":/img/ÖÃ¶¥.png")));
+        action_top->setIcon(QIcon(QStringLiteral(":/img/nail.png")));
         ::SetWindowPos(HWND(this->winId()), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
     }
 }
@@ -231,7 +263,32 @@ void Widget::on_action_set_clicked()
 {
     if (m_SetDlg == nullptr)
         m_SetDlg = new SetDlg(&m_xml,this);
-    m_SetDlg->exec();
+    switch (m_SetDlg->exec()) {
+    case 1:
+    {
+        update();
+        break;
+    }
+    }
+}
+
+void Widget::on_action_boot_clicked()
+{
+    m_Boot_flag = !m_Boot_flag;
+    QAction *acton_boot = m_Menu->actions().at(2);
+    if (m_Boot_flag)
+    {
+        acton_boot->setIcon(QIcon(QString(":/img/boot_2.png")));
+    }
+    else
+    {
+        acton_boot->setIcon(QIcon(QString(":/img/boot_1.png")));
+    }
+#ifdef Q_OS_WIN
+    printf();
+#else
+
+#endif
 }
 
 
@@ -240,29 +297,52 @@ void Widget::on_label_customContextMenuRequested(const QPoint &pos)
     m_Menu->exec(QCursor::pos());
 }
 
+void Widget::InitWidget()
+{
+    this->move(m_xml.x,m_xml.y);
+    m_Fixed_flag = m_xml.fixed == 0 ? false : true;
+    m_Top_flag = m_xml.top == 0 ? false : true;
+    m_Boot_flag = m_xml.boot == 0 ? false : true;
+    InitMenu();
+}
+
 void Widget::InitMenu()
 {
     m_Menu = new QMenu(this);
-    //
-    QAction *action_fixed = new QAction(QIcon(QStringLiteral(":/img/¶¤×Ó_fixed_hover.png")),QStringLiteral("¹Ì¶¨"),this);
+    //Fixed
+    QAction *action_fixed = new QAction(QIcon(m_Fixed_flag ? QStringLiteral(":/img/nail_fixed.png") : QStringLiteral(":/img/nail.png")),QStringLiteral("Fixed"),this);
     connect(action_fixed,&QAction::triggered,this,&Widget::on_action_fixed_clicked);
     m_Menu->addAction(action_fixed);
 
-    //ÖÃ¶¥
-#ifdef Q_OS_WIN
-    QAction *action_top = new QAction(QIcon(QStringLiteral(":/img/ÖÃ¶¥.png")),QStringLiteral("ÖÃ¶¥"),this);
-    connect(action_top,&QAction::triggered,this,&Widget::on_action_top_clicked);
-    m_Menu->addAction(action_top);
-#endif
-
-    //ÉèÖÃ
-    QAction *action_set = new QAction(QIcon(QStringLiteral(":/img/ÉèÖÃ.png")),QStringLiteral("ÉèÖÃ"),this);
+    //Set
+    QAction *action_set = new QAction(QIcon(QStringLiteral(":/img/set.png")),QStringLiteral("Set"),this);
     connect(action_set,&QAction::triggered,this,&Widget::on_action_set_clicked);
     m_Menu->addAction(action_set);
 
+    //Boot
+    QAction *action_boot = new QAction(QIcon(m_Boot_flag ? QStringLiteral(":/img/boot_2.png") : QStringLiteral(":/img/boot_1.png")),QStringLiteral("Boot"),this);
+    connect(action_boot,&QAction::triggered,this,&Widget::on_action_boot_clicked);
+    m_Menu->addAction(action_boot);
+
+    //Top
+#ifdef Q_OS_WIN
+    QAction *action_top = new QAction(QIcon(QStringLiteral(":/img/top_1.png")),QStringLiteral("Fixed"),this);
+    connect(action_top,&QAction::triggered,this,&Widget::on_action_top_clicked);
+    m_Menu->addAction(action_top);
+#endif
     m_Menu->addSeparator();
     //close
-    QAction* action_close = new QAction(QIcon(QStringLiteral(":/img/¹Ø±Õ (1).png")), QStringLiteral("ÍË³ö"), this);
-    connect(action_close,&QAction::triggered,[this](){this->close();});
+    QAction* action_close = new QAction(QIcon(QStringLiteral(":/img/quit.png")), QStringLiteral("Quit"), this);
+    connect(action_close,&QAction::triggered,[this](){
+        m_xml.x = this->pos().x();
+        m_xml.y = this->pos().y();
+        m_xml.top = m_Top_flag;
+        m_xml.fixed = m_Fixed_flag;
+        m_xml.boot = m_Boot_flag;
+        m_Xml_Helper->write(m_xml);
+        this->close();
+    });
     m_Menu->addAction(action_close);
+
+
 }

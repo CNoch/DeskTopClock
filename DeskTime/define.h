@@ -7,9 +7,15 @@ struct xml_strcut
     int y;
     int width;
     int height;
+    bool boot;
+    bool top;
+    bool fixed;
     struct xml_font
     {
-        QString font;
+        QString family;
+        int pointsize;
+        int widght;
+        bool italic;
         int red;
         int green;
         int blue;
