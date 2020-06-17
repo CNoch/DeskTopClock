@@ -2,6 +2,7 @@
 #include "ui_SetDlg.h"
 #include <qfontdialog.h>
 #include <qcolordialog.h>
+#include <qlineedit.h>
 
 
 SetDlg::SetDlg(xml_strcut* xml, QWidget* parent) :
@@ -23,7 +24,6 @@ SetDlg::~SetDlg()
 void SetDlg::on_pushButton_save_clicked()
 {
     //m_xml->TimeType = ui->comboBox_timetype->currentText();
-
 }
 
 void SetDlg::on_pushButton_close_clicked()
@@ -34,12 +34,12 @@ void SetDlg::on_pushButton_close_clicked()
 void SetDlg::on_pushButton_font_clicked()
 {
     bool ok = false;
-    QFont font = QFontDialog::getFont(&ok, QFont(m_xml->font.family,m_xml->font.pointsize,m_xml->font.widght,m_xml->font.italic), this);
+    QFont font = QFontDialog::getFont(&ok, QFont(m_xml->font.family,m_xml->font.pointsize,m_xml->font.weight,m_xml->font.italic), this);
     if (ok)
     {
         m_xml->font.family = font.family();
         m_xml->font.pointsize = font.pointSize();
-        m_xml->font.widght = font.weight();
+        m_xml->font.weight = font.weight();
         m_xml->font.italic = font.italic();
         ui->lineEdit_font->setText(m_xml->font.family);
     }

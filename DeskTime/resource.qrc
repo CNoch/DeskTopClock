@@ -11,5 +11,6 @@
         <file>img/top_2.png</file>
         <file>img/boot_1.png</file>
         <file>img/boot_2.png</file>
+        <file>img/save.png</file>
     </qresource>
 </RCC>

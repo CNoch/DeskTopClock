@@ -40,12 +40,17 @@ private slots:
 
     void on_action_boot_clicked();
 
+    void on_action_save_clicked();
+
     void on_label_customContextMenuRequested(const QPoint &pos);
 
+    
 private:
     void InitWidget();
     void InitMenu();
     void setBoot();         //设置开机启动
+
+    void setTop();          //设置置顶
 
 private:
     Ui::Widget *ui;
