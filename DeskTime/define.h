@@ -14,7 +14,7 @@ struct xml_strcut
     {
         QString family;
         int pointsize;
-        int widght;
+        int weight;
         bool italic;
         int red;
         int green;
