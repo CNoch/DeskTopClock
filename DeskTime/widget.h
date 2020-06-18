@@ -34,23 +34,24 @@ private slots:
     void on_timeout();
     void on_action_fixed_clicked();
 
-    void on_action_top_clicked();
-
     void on_action_set_clicked();
-
-    void on_action_boot_clicked();
 
     void on_action_save_clicked();
 
     void on_label_customContextMenuRequested(const QPoint &pos);
 
-    
+#ifdef Q_OS_WIN
+    void on_action_top_clicked();
+    void on_action_boot_clicked();
+#endif
+
 private:
     void InitWidget();
     void InitMenu();
+#ifdef Q_OS_WIN
     void setBoot();         //设置开机启动
-
     void setTop();          //设置置顶
+#endif
 
 private:
     Ui::Widget *ui;

@@ -162,18 +162,16 @@ Widget::Widget(QWidget *parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    this->setWindowFlags(Qt::FramelessWindowHint);
-    
 
-    //QApplication::setQuitOnLastWindowClosed(false);
-
-#ifdef Q_OS_LINUX
-    this->setWindowFlag(Qt::WindowStaysOnTopHint);
+#ifdef Q_OS_WIN
+    this->setWindowFlags(Qt::FramelessWindowHint|Qt::SubWindow);
+    this->setAttribute(Qt::WA_QuitOnClose,true);
+#else
+    this->setWindowFlags(Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint);
 #endif // Q_OS_LINUX
 
 
     this->setAttribute(Qt::WA_TranslucentBackground);
-    //m_TitleMoveWidget = new TitleMoveWidget();
 
     m_Timer = new QTimer(this);
     connect(m_Timer,&QTimer::timeout,this,&Widget::on_timeout);
@@ -197,8 +195,8 @@ void Widget::paintEvent(QPaintEvent *event)
 {
     QPainter p(this);
     p.fillRect(this->rect(), QColor(m_xml.background.red, m_xml.background.green, m_xml.background.blue, m_xml.background.alpha));
-    ui->label->setFont(QFont(m_xml.font.family,m_xml.font.pointsize,m_xml.font.weight,m_xml.font.italic));
-    ui->label->setStyleSheet(QString("color:rgb(%1,%2,%3)").arg(m_xml.font.red).arg(m_xml.font.green).arg(m_xml.font.blue));
+    //ui->label->setFont(QFont(m_xml.font.family,m_xml.font.pointsize,m_xml.font.weight,m_xml.font.italic));
+    //ui->label->setStyleSheet(QString("color:rgb(%1,%2,%3)").arg(m_xml.font.red).arg(m_xml.font.green).arg(m_xml.font.blue));
 }
 
 void Widget::mouseMoveEvent(QMouseEvent *event)
@@ -242,36 +240,37 @@ void Widget::on_action_fixed_clicked()
         action_fixed->setIcon(QIcon(QStringLiteral(":/img/nail_fixed.png")));
     }
 }
-#ifdef Q_OS_WIN
-void Widget::on_action_top_clicked()
-{
-    m_Top_flag = !m_Top_flag;
-    setTop();
-}
-#else
-void Widget::on_action_top_clicked()
-{
-    m_Top_flag = !m_Top_flag;
-}
-#endif
+
 void Widget::on_action_set_clicked()
 {
+    xml_strcut xml = m_xml;
     if (m_SetDlg == nullptr)
-        m_SetDlg = new SetDlg(&m_xml,this);
+        m_SetDlg = new SetDlg(&xml,this);
     switch (m_SetDlg->exec()) {
     case 1:
     {
-        update();
+        m_xml = xml;
+        ui->label->setFont(QFont(m_xml.font.family,m_xml.font.pointsize,m_xml.font.weight,m_xml.font.italic));
+        ui->label->setStyleSheet(QString("color:rgb(%1,%2,%3)").arg(m_xml.font.red).arg(m_xml.font.green).arg(m_xml.font.blue));
+        //update();
         break;
     }
     }
 }
 
+#ifdef Q_OS_WIN
 void Widget::on_action_boot_clicked()
 {
     m_Boot_flag = !m_Boot_flag;
     setBoot();
 }
+
+void Widget::on_action_top_clicked()
+{
+    m_Top_flag = !m_Top_flag;
+    setTop();
+}
+#endif
 
 void Widget::on_action_save_clicked()
 {
@@ -296,6 +295,8 @@ void Widget::InitWidget()
     m_Fixed_flag = m_xml.fixed == 0 ? false : true;
     m_Top_flag = m_xml.top == 0 ? false : true;
     m_Boot_flag = m_xml.boot == 0 ? false : true;
+    ui->label->setFont(QFont(m_xml.font.family,m_xml.font.pointsize,m_xml.font.weight,m_xml.font.italic));
+    ui->label->setStyleSheet(QString("color:rgb(%1,%2,%3)").arg(m_xml.font.red).arg(m_xml.font.green).arg(m_xml.font.blue));
     InitMenu();
 }
 
@@ -312,17 +313,17 @@ void Widget::InitMenu()
     connect(action_set,&QAction::triggered,this,&Widget::on_action_set_clicked);
     m_Menu->addAction(action_set);
 
-    //Boot
-    QAction *action_boot = new QAction(QStringLiteral("Boot"),this);
-    connect(action_boot,&QAction::triggered,this,&Widget::on_action_boot_clicked);
-    m_Menu->addAction(action_boot);
-
     //Save
     QAction* action_save = new QAction(QIcon(QStringLiteral(":/img/save.png")), QStringLiteral("Save"), this);
     connect(action_save, &QAction::triggered, this, &Widget::on_action_save_clicked);
     m_Menu->addAction(action_save);
     //Top
 #ifdef Q_OS_WIN
+    //Boot
+    QAction *action_boot = new QAction(QStringLiteral("Boot"),this);
+    connect(action_boot,&QAction::triggered,this,&Widget::on_action_boot_clicked);
+    m_Menu->addAction(action_boot);
+
     QAction *action_top = new QAction(QStringLiteral("Top"),this);
     
     connect(action_top,&QAction::triggered,this,&Widget::on_action_top_clicked);
@@ -336,12 +337,13 @@ void Widget::InitMenu()
 
 #ifdef Q_OS_WIN
     setTop();
+    setBoot();
 #endif // Q_OS_WIN
 
-    setBoot();
+
 }
 
-
+#ifdef Q_OS_WIN
 void Widget::setBoot()
 {
     QAction* acton_boot = m_Menu->actions().at(2);
@@ -354,7 +356,7 @@ void Widget::setBoot()
         acton_boot->setIcon(QIcon(QString(":/img/boot_1.png")));
     }
 
-#ifdef Q_OS_WIN
+
     if (m_Boot_flag)
     {
         QString app_path = QApplication::applicationDirPath() + "/DeskTime.exe";
@@ -367,9 +369,6 @@ void Widget::setBoot()
         QSettings set(Regedit_User, QSettings::NativeFormat);
         set.remove("CQ_DESKTIME");
     }
-#elif Q_OS_LINUX
-#endif // Q_OS_WIN
-
 }
 
 void Widget::setTop()
@@ -385,4 +384,6 @@ void Widget::setTop()
         ::SetWindowPos(HWND(this->winId()), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
     }
 }
+#endif // Q_OS_WIN
+
 
