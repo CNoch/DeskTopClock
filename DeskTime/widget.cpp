@@ -288,7 +288,6 @@ void Widget::on_label_customContextMenuRequested(const QPoint &pos)
     m_Menu->exec(QCursor::pos());
 }
 
-
 void Widget::InitWidget()
 {
     this->move(m_xml.x,m_xml.y);
@@ -346,7 +345,7 @@ void Widget::InitMenu()
 #ifdef Q_OS_WIN
 void Widget::setBoot()
 {
-    QAction* acton_boot = m_Menu->actions().at(2);
+    QAction* acton_boot = m_Menu->actions().at(m_Menu->actions().size() - 4);
     if (m_Boot_flag)
     {
         acton_boot->setIcon(QIcon(QString(":/img/boot_2.png")));
