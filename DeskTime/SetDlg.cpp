@@ -28,6 +28,7 @@ void SetDlg::on_pushButton_save_clicked()
 
 void SetDlg::on_pushButton_close_clicked()
 {
+    m_xml->TimeType = ui->comboBox_timetype->currentText();
     done(1);
 }
 
