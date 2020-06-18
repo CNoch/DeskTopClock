@@ -12,5 +12,6 @@
         <file>img/boot_1.png</file>
         <file>img/boot_2.png</file>
         <file>img/save.png</file>
+        <file>img/clock.png</file>
     </qresource>
 </RCC>
